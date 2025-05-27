@@ -2,7 +2,7 @@ import { ToastProvider } from "./components/ui/toast"
 import Queue from "./_pages/Queue"
 import { ToastViewport } from "@radix-ui/react-toast"
 import { useEffect, useRef, useState } from "react"
-import Solutions from "./_pages/Solutions"
+import Solutions from "./_pages/SolutionsNew"
 import { QueryClient, QueryClientProvider } from "react-query"
 
 declare global {
@@ -45,6 +45,8 @@ declare global {
 
       moveWindowLeft: () => Promise<void>
       moveWindowRight: () => Promise<void>
+      moveWindowUp: () => Promise<void>
+      moveWindowDown: () => Promise<void>
       quitApp: () => Promise<void>
     }
   }
@@ -151,6 +153,8 @@ const App: React.FC = () => {
     ]
     return () => cleanupFunctions.forEach((cleanup) => cleanup())
   }, [])
+
+
 
   return (
     <div ref={containerRef} className="min-h-0">

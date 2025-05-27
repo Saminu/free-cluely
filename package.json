@@ -1,5 +1,5 @@
 {
-  "name": "interview-coder",
+  "name": "ai-wingman",
   "version": "1.0.0",
   "main": "./dist-electron/main.js",
   "scripts": {
@@ -14,7 +14,7 @@
   },
   "build": {
     "appId": "com.electron.interview-coder",
-    "productName": "Interview Coder",
+    "productName": "AI Wingman",
     "files": [
       "dist/**/*",
       "dist-electron/**/*",

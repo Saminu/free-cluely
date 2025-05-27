@@ -195,6 +195,20 @@ async function initializeApp() {
 
   app.whenReady().then(() => {
     console.log("App is ready")
+    
+    // Set up permission handler for microphone access
+    app.on('web-contents-created', (event, contents) => {
+      contents.session.setPermissionRequestHandler((webContents, permission, callback) => {
+        const allowedPermissions = ['microphone', 'camera', 'media']
+        
+        if (allowedPermissions.includes(permission)) {
+          callback(true)
+        } else {
+          callback(false)
+        }
+      })
+    })
+    
     appState.createWindow()
     // Register global shortcuts using ShortcutsHelper
     appState.shortcutsHelper.registerGlobalShortcuts()

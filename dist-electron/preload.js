@@ -108,6 +108,8 @@ electron_1.contextBridge.exposeInMainWorld("electronAPI", {
     },
     moveWindowLeft: () => electron_1.ipcRenderer.invoke("move-window-left"),
     moveWindowRight: () => electron_1.ipcRenderer.invoke("move-window-right"),
+    moveWindowUp: () => electron_1.ipcRenderer.invoke("move-window-up"),
+    moveWindowDown: () => electron_1.ipcRenderer.invoke("move-window-down"),
     analyzeAudioFromBase64: (data, mimeType) => electron_1.ipcRenderer.invoke("analyze-audio-base64", data, mimeType),
     analyzeAudioFile: (path) => electron_1.ipcRenderer.invoke("analyze-audio-file", path),
     analyzeImageFile: (path) => electron_1.ipcRenderer.invoke("analyze-image-file", path),

@@ -71,46 +71,34 @@ const QueueCommands: React.FC<QueueCommandsProps> = ({
 
   return (
     <div className="pt-2 w-fit">
-      <div className="text-xs text-white/90 backdrop-blur-md bg-black/60 rounded-lg py-2 px-4 flex items-center justify-center gap-4">
+      <div className="bg-white/95 backdrop-blur-sm border border-gray-200 rounded-xl shadow-lg py-3 px-4 flex items-center justify-center gap-4">
         {/* Show/Hide */}
         <div className="flex items-center gap-2">
-          <span className="text-[11px] leading-none">Show/Hide</span>
+          <span className="text-sm text-gray-700 font-medium">Show/Hide</span>
           <div className="flex gap-1">
-            <button className="bg-white/10 hover:bg-white/20 transition-colors rounded-md px-1.5 py-1 text-[11px] leading-none text-white/70">
-              ⌘
-            </button>
-            <button className="bg-white/10 hover:bg-white/20 transition-colors rounded-md px-1.5 py-1 text-[11px] leading-none text-white/70">
-              B
-            </button>
+            <kbd className="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded border border-gray-300">⌘</kbd>
+            <kbd className="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded border border-gray-300">B</kbd>
           </div>
         </div>
 
         {/* Screenshot */}
         <div className="flex items-center gap-2">
-          <span className="text-[11px] leading-none truncate">
-            {screenshots.length === 0 ? "Take first screenshot" : "Screenshot"}
+          <span className="text-sm text-gray-700 font-medium">
+            {screenshots.length === 0 ? "Take Screenshot" : "Screenshot"}
           </span>
           <div className="flex gap-1">
-            <button className="bg-white/10 hover:bg-white/20 transition-colors rounded-md px-1.5 py-1 text-[11px] leading-none text-white/70">
-              ⌘
-            </button>
-            <button className="bg-white/10 hover:bg-white/20 transition-colors rounded-md px-1.5 py-1 text-[11px] leading-none text-white/70">
-              H
-            </button>
+            <kbd className="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded border border-gray-300">⌘</kbd>
+            <kbd className="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded border border-gray-300">H</kbd>
           </div>
         </div>
 
         {/* Solve Command */}
         {screenshots.length > 0 && (
           <div className="flex items-center gap-2">
-            <span className="text-[11px] leading-none">Solve</span>
+            <span className="text-sm text-gray-700 font-medium">Ask AI</span>
             <div className="flex gap-1">
-              <button className="bg-white/10 hover:bg-white/20 transition-colors rounded-md px-1.5 py-1 text-[11px] leading-none text-white/70">
-                ⌘
-              </button>
-              <button className="bg-white/10 hover:bg-white/20 transition-colors rounded-md px-1.5 py-1 text-[11px] leading-none text-white/70">
-                ↵
-              </button>
+              <kbd className="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded border border-gray-300">⌘</kbd>
+              <kbd className="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded border border-gray-300">↵</kbd>
             </div>
           </div>
         )}
@@ -118,14 +106,18 @@ const QueueCommands: React.FC<QueueCommandsProps> = ({
         {/* Voice Recording Button */}
         <div className="flex items-center gap-2">
           <button
-            className={`bg-white/10 hover:bg-white/20 transition-colors rounded-md px-2 py-1 text-[11px] leading-none text-white/70 flex items-center gap-1 ${isRecording ? 'bg-red-500/70 hover:bg-red-500/90' : ''}`}
+            className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
+              isRecording 
+                ? 'bg-red-500 text-white hover:bg-red-600' 
+                : 'bg-blue-500 text-white hover:bg-blue-600'
+            }`}
             onClick={handleRecordClick}
             type="button"
           >
             {isRecording ? (
-              <span className="animate-pulse">● Stop Recording</span>
+              <span className="animate-pulse">● Stop</span>
             ) : (
-              <span>🎤 Record Voice</span>
+              <span>🎤 Record</span>
             )}
           </button>
         </div>
@@ -136,8 +128,8 @@ const QueueCommands: React.FC<QueueCommandsProps> = ({
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
-          <div className="w-6 h-6 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-colors flex items-center justify-center cursor-help z-10">
-            <span className="text-xs text-white/70">?</span>
+          <div className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors flex items-center justify-center cursor-help border border-gray-300">
+            <span className="text-sm text-gray-600">?</span>
           </div>
 
           {/* Tooltip Content */}
@@ -146,7 +138,7 @@ const QueueCommands: React.FC<QueueCommandsProps> = ({
               ref={tooltipRef}
               className="absolute top-full right-0 mt-2 w-80"
             >
-              <div className="p-3 text-xs bg-black/80 backdrop-blur-md rounded-lg border border-white/10 text-white/90 shadow-lg">
+              <div className="p-4 text-sm bg-white/95 backdrop-blur-sm rounded-xl border border-gray-200 text-gray-700 shadow-lg">
                 <div className="space-y-4">
                   <h3 className="font-medium truncate">Keyboard Shortcuts</h3>
                   <div className="space-y-3">

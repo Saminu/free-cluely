@@ -8,7 +8,7 @@ import {
   ToastVariant,
   ToastMessage
 } from "../components/ui/toast"
-import QueueCommands from "../components/Queue/QueueCommands"
+import QueueCommands from "../components/Queue/QueueCommandsNew"
 
 interface QueueProps {
   setView: React.Dispatch<React.SetStateAction<"queue" | "solutions" | "debug">>
@@ -25,6 +25,8 @@ const Queue: React.FC<QueueProps> = ({ setView }) => {
   const [isTooltipVisible, setIsTooltipVisible] = useState(false)
   const [tooltipHeight, setTooltipHeight] = useState(0)
   const contentRef = useRef<HTMLDivElement>(null)
+  const [isDragging, setIsDragging] = useState(false)
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
 
   const { data: screenshots = [], refetch } = useQuery<Array<{ path: string; preview: string }>, Error>(
     ["screenshots"],
@@ -127,8 +129,75 @@ const Queue: React.FC<QueueProps> = ({ setView }) => {
     setTooltipHeight(height)
   }
 
+  const handleMouseDown = (e: React.MouseEvent) => {
+    // Only start dragging if clicking on the main container, not on buttons or interactive elements
+    if (e.target === e.currentTarget || (e.target as HTMLElement).classList.contains('drag-handle')) {
+      setIsDragging(true)
+      setDragStart({ x: e.clientX, y: e.clientY })
+      e.preventDefault()
+    }
+  }
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    // This is handled by the global mouse move in useEffect
+    // We'll keep this for consistency but the main logic is in useEffect
+  }
+
+  const handleMouseUp = () => {
+    setIsDragging(false)
+  }
+
+  useEffect(() => {
+    if (isDragging) {
+      const handleGlobalMouseMove = (e: MouseEvent) => {
+        const deltaX = e.clientX - dragStart.x
+        const deltaY = e.clientY - dragStart.y
+        
+        if (Math.abs(deltaX) > 15 || Math.abs(deltaY) > 15) {
+          if (Math.abs(deltaX) > Math.abs(deltaY)) {
+            // Horizontal movement
+            if (deltaX > 15) {
+              window.electronAPI.moveWindowRight()
+              setDragStart({ x: e.clientX, y: e.clientY })
+            } else if (deltaX < -15) {
+              window.electronAPI.moveWindowLeft()
+              setDragStart({ x: e.clientX, y: e.clientY })
+            }
+          } else {
+            // Vertical movement
+            if (deltaY > 15) {
+              window.electronAPI.moveWindowDown()
+              setDragStart({ x: e.clientX, y: e.clientY })
+            } else if (deltaY < -15) {
+              window.electronAPI.moveWindowUp()
+              setDragStart({ x: e.clientX, y: e.clientY })
+            }
+          }
+        }
+      }
+
+      const handleGlobalMouseUp = () => {
+        setIsDragging(false)
+      }
+
+      document.addEventListener('mousemove', handleGlobalMouseMove)
+      document.addEventListener('mouseup', handleGlobalMouseUp)
+
+      return () => {
+        document.removeEventListener('mousemove', handleGlobalMouseMove)
+        document.removeEventListener('mouseup', handleGlobalMouseUp)
+      }
+    }
+  }, [isDragging, dragStart])
+
   return (
-    <div ref={contentRef} className={`bg-transparent w-1/2`}>
+    <div 
+      ref={contentRef} 
+      className={`bg-transparent w-1/2 ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+    >
       <div className="px-4 py-3">
         <Toast
           open={toastOpen}

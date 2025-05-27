@@ -6,7 +6,7 @@ import path from "node:path"
 const isDev = process.env.NODE_ENV === "development"
 
 const startUrl = isDev
-  ? "http://localhost:5180"
+  ? "http://localhost:5173"
   : `file://${path.join(__dirname, "../dist/index.html")}`
 
 export class WindowHelper {
@@ -84,7 +84,10 @@ export class WindowHelper {
       webPreferences: {
         nodeIntegration: true,
         contextIsolation: true,
-        preload: path.join(__dirname, "preload.js")
+        preload: path.join(__dirname, "preload.js"),
+        allowRunningInsecureContent: false,
+        experimentalFeatures: false,
+        webSecurity: true
       },
       show: true,
       alwaysOnTop: true,
