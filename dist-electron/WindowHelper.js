@@ -8,8 +8,8 @@ const electron_1 = require("electron");
 const node_path_1 = __importDefault(require("node:path"));
 const isDev = process.env.NODE_ENV === "development";
 const startUrl = isDev
-    ? "http://localhost:5173"
-    : `file://${node_path_1.default.join(__dirname, "../dist/index.html")}`;
+    ? "http://localhost:5175"
+    : `file://${node_path_1.default.join(__dirname, "dist/index.html")}`;
 class WindowHelper {
     mainWindow = null;
     isWindowVisible = false;
@@ -61,13 +61,15 @@ class WindowHelper {
         this.screenWidth = workArea.width;
         this.screenHeight = workArea.height;
         this.step = Math.floor(this.screenWidth / 10); // 10 steps
-        this.currentX = 0; // Start at the left
+        this.currentX = 100; // Start 100px from the left
+        this.currentY = 100; // Start 100px from the top
         const windowSettings = {
+            width: 400,
             height: 600,
-            minWidth: undefined,
-            maxWidth: undefined,
+            minWidth: 300,
+            maxWidth: 800,
             x: this.currentX,
-            y: 0,
+            y: this.currentY,
             webPreferences: {
                 nodeIntegration: true,
                 contextIsolation: true,
@@ -86,7 +88,12 @@ class WindowHelper {
             focusable: true
         };
         this.mainWindow = new electron_1.BrowserWindow(windowSettings);
-        // this.mainWindow.webContents.openDevTools()
+        console.log("Window created with settings:", windowSettings);
+        console.log("Loading URL:", startUrl);
+        // Enable dev tools only when needed for debugging
+        // if (isDev) {
+        //   this.mainWindow.webContents.openDevTools()
+        // }
         this.mainWindow.setContentProtection(true);
         if (process.platform === "darwin") {
             this.mainWindow.setVisibleOnAllWorkspaces(true, {
@@ -104,7 +111,11 @@ class WindowHelper {
         }
         this.mainWindow.setSkipTaskbar(true);
         this.mainWindow.setAlwaysOnTop(true);
-        this.mainWindow.loadURL(startUrl).catch((err) => {
+        this.mainWindow.loadURL(startUrl).then(() => {
+            console.log("URL loaded successfully");
+            console.log("Window bounds:", this.mainWindow?.getBounds());
+            console.log("Window visible:", this.mainWindow?.isVisible());
+        }).catch((err) => {
             console.error("Failed to load URL:", err);
         });
         const bounds = this.mainWindow.getBounds();

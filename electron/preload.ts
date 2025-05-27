@@ -32,8 +32,9 @@ interface ElectronAPI {
   moveWindowDown: () => Promise<void>
   analyzeAudioFromBase64: (data: string, mimeType: string) => Promise<{ text: string; timestamp: number }>
   analyzeAudioFile: (path: string) => Promise<{ text: string; timestamp: number }>
-  analyzeImageFile: (path: string) => Promise<void>
+  analyzeImageFile: (path: string) => Promise<{ text: string; timestamp: number }>
   quitApp: () => Promise<void>
+  askFollowUpQuestion: (originalContent: string, question: string, conversationHistory: Array<{role: 'user' | 'assistant', content: string}>) => Promise<string>
 }
 
 export const PROCESSING_EVENTS = {
@@ -169,5 +170,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   analyzeAudioFromBase64: (data: string, mimeType: string) => ipcRenderer.invoke("analyze-audio-base64", data, mimeType),
   analyzeAudioFile: (path: string) => ipcRenderer.invoke("analyze-audio-file", path),
   analyzeImageFile: (path: string) => ipcRenderer.invoke("analyze-image-file", path),
-  quitApp: () => ipcRenderer.invoke("quit-app")
+  quitApp: () => ipcRenderer.invoke("quit-app"),
+  askFollowUpQuestion: (originalContent: string, question: string, conversationHistory: Array<{role: 'user' | 'assistant', content: string}>) => 
+    ipcRenderer.invoke("ask-follow-up-question", originalContent, question, conversationHistory)
 } as ElectronAPI)

@@ -110,5 +110,16 @@ function initializeIpcHandlers(appState) {
     electron_1.ipcMain.handle("move-window-down", async () => {
         appState.moveWindowDown();
     });
+    // Follow-up conversation handlers
+    electron_1.ipcMain.handle("ask-follow-up-question", async (event, originalContent, question, conversationHistory) => {
+        try {
+            const result = await appState.processingHelper.handleFollowUpQuestion(originalContent, question, conversationHistory);
+            return result;
+        }
+        catch (error) {
+            console.error("Error in ask-follow-up-question handler:", error);
+            throw error;
+        }
+    });
 }
 //# sourceMappingURL=ipcHandlers.js.map

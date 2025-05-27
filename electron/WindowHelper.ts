@@ -6,8 +6,8 @@ import path from "node:path"
 const isDev = process.env.NODE_ENV === "development"
 
 const startUrl = isDev
-  ? "http://localhost:5173"
-  : `file://${path.join(__dirname, "../dist/index.html")}`
+  ? "http://localhost:5175"
+  : `file://${path.join(__dirname, "dist/index.html")}`
 
 export class WindowHelper {
   private mainWindow: BrowserWindow | null = null
@@ -73,14 +73,16 @@ export class WindowHelper {
     this.screenHeight = workArea.height
 
     this.step = Math.floor(this.screenWidth / 10) // 10 steps
-    this.currentX = 0 // Start at the left
+    this.currentX = 100 // Start 100px from the left
+    this.currentY = 100 // Start 100px from the top
 
     const windowSettings: Electron.BrowserWindowConstructorOptions = {
+      width: 400,
       height: 600,
-      minWidth: undefined,
-      maxWidth: undefined,
+      minWidth: 300,
+      maxWidth: 800,
       x: this.currentX,
-      y: 0,
+      y: this.currentY,
       webPreferences: {
         nodeIntegration: true,
         contextIsolation: true,
@@ -100,7 +102,13 @@ export class WindowHelper {
     }
 
     this.mainWindow = new BrowserWindow(windowSettings)
-    // this.mainWindow.webContents.openDevTools()
+    console.log("Window created with settings:", windowSettings)
+    console.log("Loading URL:", startUrl)
+    
+    // Enable dev tools only when needed for debugging
+    // if (isDev) {
+    //   this.mainWindow.webContents.openDevTools()
+    // }
     this.mainWindow.setContentProtection(true)
 
     if (process.platform === "darwin") {
@@ -120,7 +128,11 @@ export class WindowHelper {
     this.mainWindow.setSkipTaskbar(true)
     this.mainWindow.setAlwaysOnTop(true)
 
-    this.mainWindow.loadURL(startUrl).catch((err) => {
+    this.mainWindow.loadURL(startUrl).then(() => {
+      console.log("URL loaded successfully")
+      console.log("Window bounds:", this.mainWindow?.getBounds())
+      console.log("Window visible:", this.mainWindow?.isVisible())
+    }).catch((err) => {
       console.error("Failed to load URL:", err)
     })
 

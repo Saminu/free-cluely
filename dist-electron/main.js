@@ -142,6 +142,10 @@ async function initializeApp() {
     (0, ipcHandlers_1.initializeIpcHandlers)(appState);
     electron_1.app.whenReady().then(() => {
         console.log("App is ready");
+        // Fix for macOS secure coding warning - disable state restoration
+        if (process.platform === 'darwin') {
+            electron_1.app.setSecureKeyboardEntryEnabled(false);
+        }
         // Set up permission handler for microphone access
         electron_1.app.on('web-contents-created', (event, contents) => {
             contents.session.setPermissionRequestHandler((webContents, permission, callback) => {

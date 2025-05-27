@@ -138,7 +138,7 @@ const Queue: React.FC<QueueProps> = ({ setView }) => {
     }
   }
 
-  const handleMouseMove = (e: React.MouseEvent) => {
+  const handleMouseMove = (_e: React.MouseEvent) => {
     // This is handled by the global mouse move in useEffect
     // We'll keep this for consistency but the main logic is in useEffect
   }

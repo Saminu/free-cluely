@@ -123,4 +123,17 @@ export function initializeIpcHandlers(appState: AppState): void {
   ipcMain.handle("move-window-down", async () => {
     appState.moveWindowDown()
   })
+
+  // Follow-up conversation handlers
+  ipcMain.handle("ask-follow-up-question", async (event, originalContent: string, question: string, conversationHistory: Array<{role: 'user' | 'assistant', content: string}>) => {
+    try {
+      const result = await appState.processingHelper.handleFollowUpQuestion(originalContent, question, conversationHistory)
+      return result
+    } catch (error: any) {
+      console.error("Error in ask-follow-up-question handler:", error)
+      throw error
+    }
+  })
+
+
 }

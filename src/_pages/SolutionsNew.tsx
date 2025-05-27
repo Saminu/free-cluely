@@ -16,6 +16,7 @@ import { ProblemStatementData } from "../types/solutions"
 import { AudioResult } from "../types/audio"
 import SolutionCommands from "../components/Solutions/SolutionCommandsNew"
 import Debug from "./DebugNew"
+import { FollowUpChat, QuickActions, ChatMessage } from "../components/AI/FollowUpChat"
 
 // (Using global ElectronAPI type from src/types/electron.d.ts)
 
@@ -163,6 +164,11 @@ const Solutions: React.FC<SolutionsProps> = ({ setView }) => {
   const [tooltipHeight, setTooltipHeight] = useState(0)
 
   const [isResetting, setIsResetting] = useState(false)
+
+  // Enhanced AI features state
+  const [showFollowUpChat, setShowFollowUpChat] = useState(false)
+  const [conversationHistory, setConversationHistory] = useState<Array<{role: 'user' | 'assistant', content: string}>>([])
+  const [isAnalyzingContent, setIsAnalyzingContent] = useState(false)
 
   const { data: extraScreenshots = [], refetch } = useQuery<Array<{ path: string; preview: string }>, Error>(
     ["extras"],
@@ -319,6 +325,51 @@ const Solutions: React.FC<SolutionsProps> = ({ setView }) => {
     setTooltipHeight(height)
   }
 
+  // Enhanced AI features functions
+
+  const handleFollowUpMessage = async (message: string): Promise<string> => {
+    try {
+      const originalContent = customContent || problemStatementData?.problem_statement || ''
+      const response = await window.electronAPI.askFollowUpQuestion(originalContent, message, conversationHistory)
+      
+      // Update conversation history
+      setConversationHistory(prev => [
+        ...prev,
+        { role: 'user', content: message },
+        { role: 'assistant', content: response }
+      ])
+      
+      return response
+    } catch (error) {
+      console.error('Error in follow-up message:', error)
+      throw new Error('Failed to get response')
+    }
+  }
+
+  const handleQuickAction = async (action: string) => {
+    try {
+      setIsAnalyzingContent(true)
+      const originalContent = customContent || problemStatementData?.problem_statement || ''
+      
+      const response = await window.electronAPI.askFollowUpQuestion(originalContent, action, conversationHistory)
+      
+      // Update conversation history
+      setConversationHistory(prev => [
+        ...prev,
+        { role: 'user', content: action },
+        { role: 'assistant', content: response }
+      ])
+      
+      // Show the follow-up chat
+      setShowFollowUpChat(true)
+    } catch (error) {
+      console.error('Error handling quick action:', error)
+      showToast('Error', 'Failed to process your request', 'error')
+    } finally {
+      setIsAnalyzingContent(false)
+    }
+  }
+
   return (
     <>
       {!isResetting && queryClient.getQueryData(["new_solution"]) ? (
@@ -429,6 +480,45 @@ const Solutions: React.FC<SolutionsProps> = ({ setView }) => {
                       </>
                     )}
                   </>
+                )}
+
+                {/* Enhanced AI Features */}
+                {(problemStatementData || customContent) && (
+                  <div className="space-y-3 border-t border-gray-200 pt-4">
+                    {/* Toggle button for AI features */}
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => {
+                          setShowFollowUpChat(!showFollowUpChat)
+                        }}
+                        className="text-xs bg-green-50 hover:bg-green-100 text-green-700 px-3 py-1.5 rounded border border-green-200 hover:border-green-300 transition-colors flex items-center gap-1"
+                      >
+                        <span>💬</span>
+                        <span>Ask Follow-up</span>
+                      </button>
+                    </div>
+
+                    {/* Follow-up Chat Section */}
+                    {showFollowUpChat && (
+                      <div className="bg-gray-50 rounded-lg p-3">
+                        <FollowUpChat
+                          initialContent={customContent || problemStatementData?.problem_statement || ''}
+                          onSendMessage={handleFollowUpMessage}
+                          isLoading={isAnalyzingContent}
+                        />
+                      </div>
+                    )}
+
+                    {/* Quick Actions */}
+                    {!showFollowUpChat && (
+                      <div className="bg-gray-50 rounded-lg p-3">
+                        <QuickActions
+                          onActionSelect={handleQuickAction}
+                          contentType="general"
+                        />
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
             </div>

@@ -1,13 +1,16 @@
 "use strict";
 // ProcessingHelper.ts
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProcessingHelper = void 0;
 const LLMHelper_1 = require("./LLMHelper");
-const dotenv_1 = __importDefault(require("dotenv"));
-dotenv_1.default.config();
+// Try to load dotenv, but don't fail if it's not available in production
+try {
+    const dotenv = require("dotenv");
+    dotenv.config();
+}
+catch (error) {
+    console.log("dotenv not available, using environment variables directly");
+}
 const isDev = process.env.NODE_ENV === "development";
 const isDevTest = process.env.IS_DEV_TEST === "true";
 const MOCK_API_WAIT_TIME = Number(process.env.MOCK_API_WAIT_TIME) || 500;
@@ -134,6 +137,16 @@ class ProcessingHelper {
     }
     getLLMHelper() {
         return this.llmHelper;
+    }
+    // Follow-up conversation support
+    async handleFollowUpQuestion(originalContent, question, conversationHistory = []) {
+        try {
+            return await this.llmHelper.askFollowUpQuestion(originalContent, question, conversationHistory);
+        }
+        catch (error) {
+            console.error("Error handling follow-up question:", error);
+            throw error;
+        }
     }
 }
 exports.ProcessingHelper = ProcessingHelper;

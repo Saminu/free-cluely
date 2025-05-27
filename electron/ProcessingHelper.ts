@@ -2,9 +2,14 @@
 
 import { AppState } from "./main"
 import { LLMHelper } from "./LLMHelper"
-import dotenv from "dotenv"
 
-dotenv.config()
+// Try to load dotenv, but don't fail if it's not available in production
+try {
+  const dotenv = require("dotenv")
+  dotenv.config()
+} catch (error) {
+  console.log("dotenv not available, using environment variables directly")
+}
 
 const isDev = process.env.NODE_ENV === "development"
 const isDevTest = process.env.IS_DEV_TEST === "true"
@@ -155,4 +160,16 @@ export class ProcessingHelper {
   public getLLMHelper() {
     return this.llmHelper;
   }
+
+  // Follow-up conversation support
+  public async handleFollowUpQuestion(originalContent: string, question: string, conversationHistory: Array<{role: 'user' | 'assistant', content: string}> = []) {
+    try {
+      return await this.llmHelper.askFollowUpQuestion(originalContent, question, conversationHistory);
+    } catch (error) {
+      console.error("Error handling follow-up question:", error);
+      throw error;
+    }
+  }
+
+
 }

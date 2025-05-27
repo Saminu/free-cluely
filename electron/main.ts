@@ -196,6 +196,11 @@ async function initializeApp() {
   app.whenReady().then(() => {
     console.log("App is ready")
     
+    // Fix for macOS secure coding warning - disable state restoration
+    if (process.platform === 'darwin') {
+      app.setSecureKeyboardEntryEnabled(false)
+    }
+    
     // Set up permission handler for microphone access
     app.on('web-contents-created', (event, contents) => {
       contents.session.setPermissionRequestHandler((webContents, permission, callback) => {
