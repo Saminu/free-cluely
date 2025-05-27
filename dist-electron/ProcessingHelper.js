@@ -3,6 +3,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProcessingHelper = void 0;
 const LLMHelper_1 = require("./LLMHelper");
+const config_1 = require("./config");
 // Try to load dotenv, but don't fail if it's not available in production
 try {
     const dotenv = require("dotenv");
@@ -21,10 +22,8 @@ class ProcessingHelper {
     currentExtraProcessingAbortController = null;
     constructor(appState) {
         this.appState = appState;
-        const apiKey = process.env.GEMINI_API_KEY;
-        if (!apiKey) {
-            throw new Error("GEMINI_API_KEY not found in environment variables");
-        }
+        const config = config_1.ConfigHelper.getInstance();
+        const apiKey = config.getGeminiApiKey(); // This will throw a helpful error if not found
         this.llmHelper = new LLMHelper_1.LLMHelper(apiKey);
     }
     async processScreenshots() {

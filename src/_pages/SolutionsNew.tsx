@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from "react"
 import { useQuery, useQueryClient } from "react-query"
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter"
 import { oneLight } from "react-syntax-highlighter/dist/esm/styles/prism"
+import type { ElectronAPI } from "../types/electron"
 
 import ScreenshotQueue from "../components/Queue/ScreenshotQueueNew"
 import {

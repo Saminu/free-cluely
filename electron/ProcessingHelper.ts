@@ -2,6 +2,7 @@
 
 import { AppState } from "./main"
 import { LLMHelper } from "./LLMHelper"
+import { ConfigHelper } from "./config"
 
 // Try to load dotenv, but don't fail if it's not available in production
 try {
@@ -23,10 +24,8 @@ export class ProcessingHelper {
 
   constructor(appState: AppState) {
     this.appState = appState
-    const apiKey = process.env.GEMINI_API_KEY
-    if (!apiKey) {
-      throw new Error("GEMINI_API_KEY not found in environment variables")
-    }
+    const config = ConfigHelper.getInstance()
+    const apiKey = config.getGeminiApiKey() // This will throw a helpful error if not found
     this.llmHelper = new LLMHelper(apiKey)
   }
 
